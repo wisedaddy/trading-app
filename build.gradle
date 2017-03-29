@@ -1,0 +1,21 @@
+group 'sfilyuta'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile(
+            'com.google.guava:guava:19.0'
+    )
+
+    testCompile(
+            'junit:junit:4.11',
+            'org.assertj:assertj-core:3.6.2'
+    )
+}
