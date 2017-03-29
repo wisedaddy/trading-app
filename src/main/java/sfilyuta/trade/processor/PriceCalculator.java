@@ -12,7 +12,7 @@ import static sfilyuta.trade.domain.TradeResult.NA;
 
 public class PriceCalculator {
 
-    private List<Order> orders;
+    private final List<Order> orders;
 
     public PriceCalculator(List<Order> orders) {
         this.orders = orders;
@@ -24,13 +24,32 @@ public class PriceCalculator {
         BuyOrdersProvider buyOrdersProvider = new BuyOrdersProvider(orders);
         int sellTotalAmount = 0;
 
-        for (Order order : sellOrdersProvider.getSellOrdersSortedByPrice()) {
-            sellTotalAmount += order.getAmount();
-            Integer matchedOrderAmount = min(sellTotalAmount,
-                    buyOrdersProvider.orderAmountForStartingPrice(order.getPrice()));
+        for (Order sellOrder : sellOrdersProvider.getSellOrdersSortedByPrice()) {
+            sellTotalAmount += sellOrder.getAmount();
 
-            if (matchedOrderAmount > 0) {
-                updateTrades(trades, order.getPrice(), matchedOrderAmount);
+            SortedMap<BigDecimal, Integer> buyOrders = buyOrdersProvider.ordersForStartingPrice(sellOrder.getPrice());
+
+            boolean firstBuyOrderMatch = true;
+            for (BigDecimal buyOrderPrice : buyOrders.keySet()) {
+                int buyTotalAmount = 0;
+                SortedMap<BigDecimal, Integer> submap = buyOrders.tailMap(buyOrderPrice);
+                Iterator<Integer> submapIterator = submap.values().iterator();
+
+                while ((buyTotalAmount < sellTotalAmount) && submapIterator.hasNext()) {
+                    Integer buyOrder = submapIterator.next();
+                    buyTotalAmount += buyOrder;
+                }
+                Integer matchedOrderAmount = min(sellTotalAmount, buyTotalAmount);
+
+                if (matchedOrderAmount > 0) {
+                    updateTrades(trades, buyOrderPrice, matchedOrderAmount);
+
+                    if (firstBuyOrderMatch && !sellOrder.getPrice().equals(buyOrderPrice)) {
+                        updateTrades(trades, sellOrder.getPrice(), matchedOrderAmount);
+                    }
+                }
+
+                firstBuyOrderMatch = false;
             }
         }
 
@@ -42,15 +61,15 @@ public class PriceCalculator {
         return new TradeResult(topTrade.getKey(), avgPrice(topTrade.getValue()));
     }
 
-    private void updateTrades(TreeMap<Integer, Set<BigDecimal>> trades, BigDecimal price, Integer minAmount) {
-        Set<BigDecimal> priceSet = trades.get(minAmount);
+    private void updateTrades(TreeMap<Integer, Set<BigDecimal>> trades, BigDecimal price, Integer amount) {
+        Set<BigDecimal> priceSet = trades.get(amount);
 
         if (priceSet == null) {
             priceSet = new HashSet<>();
         }
 
         priceSet.add(price);
-        trades.put(minAmount, priceSet);
+        trades.put(amount, priceSet);
     }
 
     private BigDecimal avgPrice(Set<BigDecimal> prices) {

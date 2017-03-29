@@ -20,7 +20,8 @@ public class BuyOrdersProviderTest {
                 new Order(BUY, 8, new BigDecimal("10.10")),
                 new Order(SELL, 33, new BigDecimal("10.10"))
         ));
-        assertThat(buyOrdersProvider.orderAmountForStartingPrice(new BigDecimal("10.10"))).isEqualTo(20);
+        assertThat(buyOrdersProvider.ordersForStartingPrice(new BigDecimal("10.10")).values().iterator().next())
+                .isEqualTo(20);
     }
 
     @Test
@@ -30,7 +31,8 @@ public class BuyOrdersProviderTest {
                 new Order(BUY, 18, new BigDecimal("10.30")),
                 new Order(SELL, 33, new BigDecimal("10.10"))
         ));
-        assertThat(buyOrdersProvider.orderAmountForStartingPrice(new BigDecimal("10.10"))).isEqualTo(30);
+        assertThat(buyOrdersProvider.ordersForStartingPrice(new BigDecimal("10.10")).values().iterator().next())
+                .isEqualTo(12);
     }
 
     @Test

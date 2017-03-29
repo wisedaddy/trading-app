@@ -68,7 +68,7 @@ public class PriceCalculatorAcceptanceTest {
                         new Order(BUY, 500, new BigDecimal("11.50"))
                 ));
         assertThat(priceCalculator.tradeResult()).isEqualToComparingFieldByField(
-                new TradeResult(400, new BigDecimal("17.40"))
+                new TradeResult(400, new BigDecimal("16.43"))
         );
     }
 

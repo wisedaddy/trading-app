@@ -21,14 +21,10 @@ public class SellOrdersProvider {
                 .forEach(order -> {
                     BigDecimal price = order.getPrice();
                     Order accumulatedOrder = sellOrdersSortedByPrice.get(price);
-
-                    if (accumulatedOrder == null) {
-                        accumulatedOrder = new Order(SELL, 0, price);
-                    }
-
+                    int amount = accumulatedOrder == null ? 0 : accumulatedOrder.getAmount();
                     sellOrdersSortedByPrice.put(
                             price,
-                            new Order(SELL, order.getAmount() + accumulatedOrder.getAmount(), price)
+                            new Order(SELL, order.getAmount() + amount, price)
                     );
                 });
     }
