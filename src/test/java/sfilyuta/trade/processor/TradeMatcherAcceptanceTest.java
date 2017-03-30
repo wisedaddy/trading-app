@@ -50,7 +50,7 @@ public class TradeMatcherAcceptanceTest {
                         anOrder().buy().withAmount(500).withPrice("15.10").build(),
                         anOrder().buy().withAmount(500).withPrice("11.50").build()
                 ), new TradeResult(400, new BigDecimal("16.43"))),
-                $("multiple sell and buy with few matches - 3", of(
+                $("multiple sell and buy with few matches - 2", of(
                         anOrder().buy().withAmount(100).withPrice("15.40").build(),
                         anOrder().buy().withAmount(900).withPrice("17.40").build(),
                         anOrder().buy().withAmount(900).withPrice("19.40").build(),
@@ -60,14 +60,21 @@ public class TradeMatcherAcceptanceTest {
                         anOrder().buy().withAmount(500).withPrice("15.10").build(),
                         anOrder().buy().withAmount(500).withPrice("11.50").build()
                 ), new TradeResult(700, new BigDecimal("17.42"))),
-                $("multiple sell and buy with few matches - 2", of(
+                $("multiple sell and buy with few matches - 3", of(
                         anOrder().buy().withAmount(100).withPrice("15.40").build(),
                         anOrder().buy().withAmount(100).withPrice("15.30").build(),
                         anOrder().sell().withAmount(150).withPrice("15.30").build(),
                         anOrder().sell().withAmount(150).withPrice("15.45").build(),
                         anOrder().buy().withAmount(100).withPrice("15.20").build(),
                         anOrder().sell().withAmount(100).withPrice("15.40").build()
-                ), new TradeResult(150, new BigDecimal("15.30")))
+                ), new TradeResult(150, new BigDecimal("15.30"))),
+                $("multiple sell and buy with few matches - 4", of(
+                        anOrder().buy().withAmount(200).withPrice("40").build(),
+                        anOrder().buy().withAmount(150).withPrice("35").build(),
+                        anOrder().buy().withAmount(150).withPrice("30").build(),
+                        anOrder().sell().withAmount(100).withPrice("20").build(),
+                        anOrder().sell().withAmount(100).withPrice("10").build()
+                ), new TradeResult(200, new BigDecimal("31.25")))
         );
     }
 

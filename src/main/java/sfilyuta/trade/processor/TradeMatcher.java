@@ -87,10 +87,9 @@ public class TradeMatcher {
                 return prices.iterator().next();
 
             default:
-                BigDecimal avgPrice = prices.stream()
+                return prices.stream()
                         .reduce(BigDecimal.ZERO, BigDecimal::add)
-                        .divide(new BigDecimal(prices.size()), RoundingMode.CEILING);
-                return avgPrice;
+                        .divide(new BigDecimal(prices.size()), 2, RoundingMode.CEILING);
         }
     }
 
