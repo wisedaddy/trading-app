@@ -2,6 +2,7 @@ package sfilyuta.trade.processor;
 
 import sfilyuta.trade.domain.Order;
 import sfilyuta.trade.domain.TradeResult;
+import sfilyuta.trade.validator.InputOrderValidator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -12,9 +13,12 @@ import static sfilyuta.trade.domain.TradeResult.NA;
 
 public class PriceCalculator {
 
+    private InputOrderValidator inputOrderValidator = new InputOrderValidator();
+
     private final List<Order> orders;
 
     public PriceCalculator(List<Order> orders) {
+        inputOrderValidator.checkValid(orders);
         this.orders = orders;
     }
 

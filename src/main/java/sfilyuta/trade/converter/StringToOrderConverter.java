@@ -1,7 +1,7 @@
 package sfilyuta.trade.converter;
 
-import sfilyuta.trade.domain.Order;
 import sfilyuta.trade.domain.Direction;
+import sfilyuta.trade.domain.Order;
 
 import java.math.BigDecimal;
 
@@ -19,6 +19,7 @@ public class StringToOrderConverter implements Converter<String, Order> {
         }
 
         Integer amount = Integer.valueOf(parts[1]);
+
         if (amount == 0) {
             throw new ConverterException("Incorrect amount in order");
         }

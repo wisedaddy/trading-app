@@ -12,16 +12,12 @@ public class StringListToOrderListConverter implements Converter<List<String>, L
     private Converter<String, Order> orderConverter = new StringToOrderConverter();
 
     @Override
-    public List<Order> convert(List<String> orderStrings) {
+    public List<Order> convert(List<String> orderStrings) throws ConverterException {
         requireNonNull(orderStrings, "Order list cannot be null");
         List<Order> orders = new ArrayList<>();
 
         for (String line : orderStrings) {
-            try {
-                orders.add(orderConverter.convert(line));
-            } catch (ConverterException e) {
-                // skipping bad line
-            }
+            orders.add(orderConverter.convert(line));
         }
 
         return orders;
