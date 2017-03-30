@@ -31,11 +31,10 @@ public class PriceCalculator {
 
         for (Order sellOrder : sellOrdersProvider.ordersSortedByPrice()) {
             sellTotalAmount += sellOrder.getAmount();
-
             SortedMap<BigDecimal, Integer> buyOrders = buyOrdersProvider.ordersForStartPrice(sellOrder.getPrice());
-
             Set<BigDecimal> buyOrderPrices = buyOrders.keySet();
             boolean firstBuyOrderMatch = true;
+
             for (BigDecimal buyPrice : buyOrderPrices) {
                 int buyTotalAmount = calcBuyTotalAmount(buyOrders, buyPrice, sellTotalAmount);
                 Integer matchedOrderAmount = min(sellTotalAmount, buyTotalAmount);
@@ -70,9 +69,11 @@ public class PriceCalculator {
 
     private void updateResult(BigDecimal price, Integer amount) {
         if (amount >= maxAmount) {
+
             if (amount > maxAmount) {
                 resPrices = new HashSet<>();
             }
+
             resPrices.add(price);
             maxAmount = amount;
         }
@@ -82,12 +83,14 @@ public class PriceCalculator {
         switch (prices.size()) {
             case 0:
                 return null;
+
             case 1:
                 return prices.iterator().next();
+
             default:
                 BigDecimal avgPrice = prices.stream()
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                avgPrice = avgPrice.divide(new BigDecimal(prices.size()), RoundingMode.CEILING);
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .divide(new BigDecimal(prices.size()), RoundingMode.CEILING);
                 return avgPrice;
         }
     }
