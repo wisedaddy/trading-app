@@ -9,7 +9,6 @@ import java.math.RoundingMode;
 import java.util.*;
 
 import static java.lang.Math.min;
-import static sfilyuta.trade.domain.TradeResult.NA;
 
 public class PriceCalculator {
 
@@ -17,13 +16,15 @@ public class PriceCalculator {
 
     private final List<Order> orders;
 
+    private int maxAmount = 0;
+    private Set<BigDecimal> resPrices = new HashSet<>();
+
     public PriceCalculator(List<Order> orders) {
         orderValidator.checkValid(orders);
         this.orders = orders;
     }
 
     public TradeResult tradeResult() {
-        TreeMap<Integer, Set<BigDecimal>> trades = new TreeMap<>();
         SellOrdersProvider sellOrdersProvider = new SellOrdersProvider(orders);
         BuyOrdersProvider buyOrdersProvider = new BuyOrdersProvider(orders);
         int sellTotalAmount = 0;
@@ -40,10 +41,10 @@ public class PriceCalculator {
                 Integer matchedOrderAmount = min(sellTotalAmount, buyTotalAmount);
 
                 if (matchedOrderAmount > 0) {
-                    updateTrades(trades, buyPrice, matchedOrderAmount);
+                    updateResult(buyPrice, matchedOrderAmount);
 
                     if (firstBuyOrderMatch && !sellOrder.getPrice().equals(buyPrice)) {
-                        updateTrades(trades, sellOrder.getPrice(), matchedOrderAmount);
+                        updateResult(sellOrder.getPrice(), matchedOrderAmount);
                     }
                 }
 
@@ -51,12 +52,7 @@ public class PriceCalculator {
             }
         }
 
-        if (trades.isEmpty()) {
-            return NA;
-        }
-
-        Map.Entry<Integer, Set<BigDecimal>> topTrade = trades.lastEntry();
-        return new TradeResult(topTrade.getKey(), avgPrice(topTrade.getValue()));
+        return TradeResult.of(maxAmount, avgPrice(resPrices));
     }
 
     private int calcBuyTotalAmount(SortedMap<BigDecimal, Integer> buyOrders, BigDecimal buyPrice, int sellTotalAmount) {
@@ -72,22 +68,28 @@ public class PriceCalculator {
         return buyTotalAmount;
     }
 
-    private void updateTrades(TreeMap<Integer, Set<BigDecimal>> trades, BigDecimal price, Integer amount) {
-        Set<BigDecimal> priceSet = trades.get(amount);
-
-        if (priceSet == null) {
-            priceSet = new HashSet<>();
+    private void updateResult(BigDecimal price, Integer amount) {
+        if (amount >= maxAmount) {
+            if (amount > maxAmount) {
+                resPrices = new HashSet<>();
+            }
+            resPrices.add(price);
+            maxAmount = amount;
         }
-
-        priceSet.add(price);
-        trades.put(amount, priceSet);
     }
 
     private BigDecimal avgPrice(Set<BigDecimal> prices) {
-        BigDecimal avgPrice = prices.stream()
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        avgPrice = avgPrice.divide(new BigDecimal(prices.size()), RoundingMode.CEILING);
-        return avgPrice;
+        switch (prices.size()) {
+            case 0:
+                return null;
+            case 1:
+                return prices.iterator().next();
+            default:
+                BigDecimal avgPrice = prices.stream()
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                avgPrice = avgPrice.divide(new BigDecimal(prices.size()), RoundingMode.CEILING);
+                return avgPrice;
+        }
     }
 
 }

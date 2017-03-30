@@ -21,4 +21,11 @@ public class TradeResult {
     public BigDecimal getPrice() {
         return price;
     }
+
+    public static TradeResult of(int amount, BigDecimal price) {
+        if (amount == 0)
+            return NA;
+        else
+            return new TradeResult(amount, price);
+    }
 }
