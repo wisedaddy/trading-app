@@ -8,17 +8,17 @@ import java.math.BigDecimal;
 import static com.google.common.collect.ImmutableList.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static sfilyuta.trade.domain.Direction.BUY;
 import static sfilyuta.trade.domain.Direction.SELL;
+import static sfilyuta.trade.support.OrderBuilder.anOrder;
 
 public class SellOrdersProviderTest {
 
     @Test
     public void calculateBuyOrdersAmountWithSamePrice() {
         SellOrdersProvider sellOrdersProvider = new SellOrdersProvider(of(
-                new Order(BUY, 18, new BigDecimal("10.10")),
-                new Order(SELL, 33, new BigDecimal("10.10")),
-                new Order(SELL, 32, new BigDecimal("10.10"))
+                anOrder().buy().withAmount(18).withPrice( "10.10").build(),
+                anOrder().sell().withAmount(33).withPrice("10.10").build(),
+                anOrder().sell().withAmount(32).withPrice( "10.10").build()
         ));
         assertThat(sellOrdersProvider.getSellOrdersSortedByPrice()).containsExactly(
                 new Order(SELL, 65, new BigDecimal("10.10"))
@@ -28,13 +28,13 @@ public class SellOrdersProviderTest {
     @Test
     public void calculateOrdersAmountWithDifferentPrice() {
         SellOrdersProvider sellOrdersProvider = new SellOrdersProvider(of(
-                new Order(BUY, 18, new BigDecimal("10.30")),
-                new Order(SELL, 33, new BigDecimal("10.10")),
-                new Order(SELL, 32, new BigDecimal("10.50"))
+                anOrder().buy().withAmount(18).withPrice("10.30").build(),
+                anOrder().sell().withAmount(33).withPrice("10.10").build(),
+                anOrder().sell().withAmount(32).withPrice("10.50").build()
         ));
         assertThat(sellOrdersProvider.getSellOrdersSortedByPrice()).containsExactly(
-                new Order(SELL, 33, new BigDecimal("10.10")),
-                new Order(SELL, 32, new BigDecimal("10.50"))
+                anOrder().sell().withAmount(33).withPrice("10.10").build(),
+                anOrder().sell().withAmount(32).withPrice("10.50").build()
         );
     }
 

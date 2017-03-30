@@ -1,24 +1,22 @@
 package sfilyuta.trade.processor;
 
 import org.junit.Test;
-import sfilyuta.trade.domain.Order;
 
 import java.math.BigDecimal;
 
 import static com.google.common.collect.ImmutableList.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static sfilyuta.trade.domain.Direction.BUY;
-import static sfilyuta.trade.domain.Direction.SELL;
+import static sfilyuta.trade.support.OrderBuilder.anOrder;
 
 public class BuyOrdersProviderTest {
 
     @Test
     public void calculateBuyOrdersAmountWithSamePrice() {
         BuyOrdersProvider buyOrdersProvider = new BuyOrdersProvider(of(
-                new Order(BUY, 12, new BigDecimal("10.10")),
-                new Order(BUY, 8, new BigDecimal("10.10")),
-                new Order(SELL, 33, new BigDecimal("10.10"))
+                anOrder().buy().withAmount(12).withPrice("10.10").build(),
+                anOrder().buy().withAmount(8).withPrice("10.10").build(),
+                anOrder().sell().withAmount(33).withPrice("10.10").build()
         ));
         assertThat(buyOrdersProvider.ordersForStartingPrice(new BigDecimal("10.10")).values().iterator().next())
                 .isEqualTo(20);
@@ -27,9 +25,9 @@ public class BuyOrdersProviderTest {
     @Test
     public void calculateOrdersAmountWithDifferentPrice() {
         BuyOrdersProvider buyOrdersProvider = new BuyOrdersProvider(of(
-                new Order(BUY, 12, new BigDecimal("10.10")),
-                new Order(BUY, 18, new BigDecimal("10.30")),
-                new Order(SELL, 33, new BigDecimal("10.10"))
+                anOrder().buy().withAmount(12).withPrice("10.10").build(),
+                anOrder().buy().withAmount(18).withPrice("10.30").build(),
+                anOrder().sell().withAmount(33).withPrice("10.10").build()
         ));
         assertThat(buyOrdersProvider.ordersForStartingPrice(new BigDecimal("10.10")).values().iterator().next())
                 .isEqualTo(12);
@@ -39,4 +37,5 @@ public class BuyOrdersProviderTest {
     public void throwsExceptionWhenOrdersIsNull() throws Exception {
         assertThatThrownBy(() -> new BuyOrdersProvider(null)).hasMessage("Orders list cannot be null");
     }
+
 }
