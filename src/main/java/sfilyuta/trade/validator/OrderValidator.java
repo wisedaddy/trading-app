@@ -7,7 +7,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class InputOrderValidator {
+public class OrderValidator {
 
     private static final BigDecimal HUNDRED = new BigDecimal(100);
 
@@ -20,11 +20,11 @@ public class InputOrderValidator {
     }
 
     private void checkAmount(int amount) {
-        checkArgument((amount >= 1) && (amount < 1_000), "Amount of order should be from 1 to 1000");
+        checkArgument((amount >= 1) && (amount < 1_000), "Amount of orders should be from 1 to 1000");
     }
 
     private void checkOrdersCount(int size) {
-        checkArgument((size >= 0) && (size <= 1_000_000), "Number of orders should be >=0 and <= 1 000 000");
+        checkArgument(size <= 1_000_000, "Number of orders should be <= 1 000 000");
     }
 
     private void checkPrice(BigDecimal price) {
