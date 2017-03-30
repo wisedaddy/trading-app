@@ -1,6 +1,5 @@
 package sfilyuta.trade;
 
-import sfilyuta.trade.converter.ConverterException;
 import sfilyuta.trade.converter.StringListToOrderListConverter;
 import sfilyuta.trade.domain.TradeResult;
 import sfilyuta.trade.processor.PriceCalculator;
@@ -10,7 +9,7 @@ import static java.lang.String.format;
 
 public class TradeApp {
 
-    public static void main(String[] args) throws ConverterException {
+    public static void main(String[] args) {
         StringListToOrderListConverter stringListToOrderListConverter = new StringListToOrderListConverter();
         InputDataReader inputDataReader = new InputDataReader();
         PriceCalculator priceCalculator = new PriceCalculator(

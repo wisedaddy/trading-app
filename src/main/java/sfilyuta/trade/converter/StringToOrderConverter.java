@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 public class StringToOrderConverter implements Converter<String, Order> {
 
     @Override
-    public Order convert(String line) throws ConverterException {
+    public Order convert(String line) {
         requireNonNull(line, "Order line cannot be null");
         String[] parts = line.split("\\s");
 
@@ -19,10 +19,6 @@ public class StringToOrderConverter implements Converter<String, Order> {
         }
 
         Integer amount = Integer.valueOf(parts[1]);
-
-        if (amount == 0) {
-            throw new ConverterException("Incorrect amount in order");
-        }
 
         return new Order(Direction.fromSymbol(parts[0]),
                 amount,
