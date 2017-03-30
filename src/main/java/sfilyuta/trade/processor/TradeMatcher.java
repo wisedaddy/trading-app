@@ -10,16 +10,15 @@ import java.util.*;
 
 import static java.lang.Math.min;
 
-public class PriceCalculator {
-
-    private OrderValidator orderValidator = new OrderValidator();
+public class TradeMatcher {
 
     private final List<Order> orders;
 
     private int maxAmount = 0;
     private Set<BigDecimal> resPrices = new HashSet<>();
 
-    public PriceCalculator(List<Order> orders) {
+    public TradeMatcher(List<Order> orders) {
+        OrderValidator orderValidator = new OrderValidator();
         orderValidator.checkValid(orders);
         this.orders = orders;
     }

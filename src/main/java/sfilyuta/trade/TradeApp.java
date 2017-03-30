@@ -2,7 +2,7 @@ package sfilyuta.trade;
 
 import sfilyuta.trade.converter.StringListToOrderListConverter;
 import sfilyuta.trade.domain.TradeResult;
-import sfilyuta.trade.processor.PriceCalculator;
+import sfilyuta.trade.processor.TradeMatcher;
 import sfilyuta.trade.ui.InputDataReader;
 
 import static java.lang.String.format;
@@ -12,9 +12,9 @@ public class TradeApp {
     public static void main(String[] args) {
         StringListToOrderListConverter stringListToOrderListConverter = new StringListToOrderListConverter();
         InputDataReader inputDataReader = new InputDataReader();
-        PriceCalculator priceCalculator = new PriceCalculator(
+        TradeMatcher tradeMatcher = new TradeMatcher(
                 stringListToOrderListConverter.convert(inputDataReader.readFromConsole()));
-        TradeResult result = priceCalculator.tradeResult();
+        TradeResult result = tradeMatcher.tradeResult();
         output(result);
     }
 

@@ -16,6 +16,7 @@ dependencies {
 
     testCompile(
             'junit:junit:4.11',
-            'org.assertj:assertj-core:3.6.2'
+            'org.assertj:assertj-core:3.6.2',
+            'pl.pragmatists:JUnitParams:1.0.6'
     )
 }
