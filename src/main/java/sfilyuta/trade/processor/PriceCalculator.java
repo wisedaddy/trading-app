@@ -28,27 +28,21 @@ public class PriceCalculator {
         BuyOrdersProvider buyOrdersProvider = new BuyOrdersProvider(orders);
         int sellTotalAmount = 0;
 
-        for (Order sellOrder : sellOrdersProvider.getSellOrdersSortedByPrice()) {
+        for (Order sellOrder : sellOrdersProvider.ordersSortedByPrice()) {
             sellTotalAmount += sellOrder.getAmount();
 
-            SortedMap<BigDecimal, Integer> buyOrders = buyOrdersProvider.ordersForStartingPrice(sellOrder.getPrice());
+            SortedMap<BigDecimal, Integer> buyOrders = buyOrdersProvider.ordersForStartPrice(sellOrder.getPrice());
 
+            Set<BigDecimal> buyOrderPrices = buyOrders.keySet();
             boolean firstBuyOrderMatch = true;
-            for (BigDecimal buyOrderPrice : buyOrders.keySet()) {
-                int buyTotalAmount = 0;
-                SortedMap<BigDecimal, Integer> submap = buyOrders.tailMap(buyOrderPrice);
-                Iterator<Integer> submapIterator = submap.values().iterator();
-
-                while ((buyTotalAmount < sellTotalAmount) && submapIterator.hasNext()) {
-                    Integer buyOrder = submapIterator.next();
-                    buyTotalAmount += buyOrder;
-                }
+            for (BigDecimal buyPrice : buyOrderPrices) {
+                int buyTotalAmount = calcBuyTotalAmount(buyOrders, buyPrice, sellTotalAmount);
                 Integer matchedOrderAmount = min(sellTotalAmount, buyTotalAmount);
 
                 if (matchedOrderAmount > 0) {
-                    updateTrades(trades, buyOrderPrice, matchedOrderAmount);
+                    updateTrades(trades, buyPrice, matchedOrderAmount);
 
-                    if (firstBuyOrderMatch && !sellOrder.getPrice().equals(buyOrderPrice)) {
+                    if (firstBuyOrderMatch && !sellOrder.getPrice().equals(buyPrice)) {
                         updateTrades(trades, sellOrder.getPrice(), matchedOrderAmount);
                     }
                 }
@@ -63,6 +57,19 @@ public class PriceCalculator {
 
         Map.Entry<Integer, Set<BigDecimal>> topTrade = trades.lastEntry();
         return new TradeResult(topTrade.getKey(), avgPrice(topTrade.getValue()));
+    }
+
+    private int calcBuyTotalAmount(SortedMap<BigDecimal, Integer> buyOrders, BigDecimal buyPrice, int sellTotalAmount) {
+        int buyTotalAmount = 0;
+        SortedMap<BigDecimal, Integer> submap = buyOrders.tailMap(buyPrice);
+        Iterator<Integer> submapIterator = submap.values().iterator();
+
+        while ((buyTotalAmount < sellTotalAmount) && submapIterator.hasNext()) {
+            Integer buyOrder = submapIterator.next();
+            buyTotalAmount += buyOrder;
+        }
+
+        return buyTotalAmount;
     }
 
     private void updateTrades(TreeMap<Integer, Set<BigDecimal>> trades, BigDecimal price, Integer amount) {

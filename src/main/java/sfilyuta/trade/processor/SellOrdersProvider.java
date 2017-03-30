@@ -29,7 +29,7 @@ public class SellOrdersProvider {
                 });
     }
 
-    public Collection<Order> getSellOrdersSortedByPrice() {
+    public Collection<Order> ordersSortedByPrice() {
         return sellOrdersSortedByPrice.values();
     }
 

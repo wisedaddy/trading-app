@@ -18,7 +18,7 @@ public class BuyOrdersProviderTest {
                 anOrder().buy().withAmount(8).withPrice("10.10").build(),
                 anOrder().sell().withAmount(33).withPrice("10.10").build()
         ));
-        assertThat(buyOrdersProvider.ordersForStartingPrice(new BigDecimal("10.10")).values().iterator().next())
+        assertThat(buyOrdersProvider.ordersForStartPrice(new BigDecimal("10.10")).values().iterator().next())
                 .isEqualTo(20);
     }
 
@@ -29,7 +29,7 @@ public class BuyOrdersProviderTest {
                 anOrder().buy().withAmount(18).withPrice("10.30").build(),
                 anOrder().sell().withAmount(33).withPrice("10.10").build()
         ));
-        assertThat(buyOrdersProvider.ordersForStartingPrice(new BigDecimal("10.10")).values().iterator().next())
+        assertThat(buyOrdersProvider.ordersForStartPrice(new BigDecimal("10.10")).values().iterator().next())
                 .isEqualTo(12);
     }
 

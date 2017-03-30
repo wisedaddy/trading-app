@@ -20,7 +20,7 @@ public class SellOrdersProviderTest {
                 anOrder().sell().withAmount(33).withPrice("10.10").build(),
                 anOrder().sell().withAmount(32).withPrice( "10.10").build()
         ));
-        assertThat(sellOrdersProvider.getSellOrdersSortedByPrice()).containsExactly(
+        assertThat(sellOrdersProvider.ordersSortedByPrice()).containsExactly(
                 new Order(SELL, 65, new BigDecimal("10.10"))
         );
     }
@@ -32,7 +32,7 @@ public class SellOrdersProviderTest {
                 anOrder().sell().withAmount(33).withPrice("10.10").build(),
                 anOrder().sell().withAmount(32).withPrice("10.50").build()
         ));
-        assertThat(sellOrdersProvider.getSellOrdersSortedByPrice()).containsExactly(
+        assertThat(sellOrdersProvider.ordersSortedByPrice()).containsExactly(
                 anOrder().sell().withAmount(33).withPrice("10.10").build(),
                 anOrder().sell().withAmount(32).withPrice("10.50").build()
         );
