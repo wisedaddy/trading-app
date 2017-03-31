@@ -6,8 +6,12 @@ import sfilyuta.trade.validator.OrderValidator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedMap;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Math.min;
 
 public class TradeMatcher {
@@ -32,48 +36,28 @@ public class TradeMatcher {
             sellTotalAmount += sellOrder.getAmount();
             SortedMap<BigDecimal, Integer> buyOrders = buyOrdersProvider.ordersForStartPrice(sellOrder.getPrice());
             Set<BigDecimal> buyOrderPrices = buyOrders.keySet();
-            boolean firstBuyOrderMatch = true;
 
             for (BigDecimal buyPrice : buyOrderPrices) {
-                int buyTotalAmount = calcBuyTotalAmount(buyOrders, buyPrice, sellTotalAmount);
+                int buyTotalAmount = buyOrders.tailMap(buyPrice).values().stream().mapToInt(Integer::intValue).sum();
                 Integer matchedOrderAmount = min(sellTotalAmount, buyTotalAmount);
 
                 if (matchedOrderAmount > 0) {
-                    updateResult(buyPrice, matchedOrderAmount);
-
-                    if (firstBuyOrderMatch && !sellOrder.getPrice().equals(buyPrice)) {
-                        updateResult(sellOrder.getPrice(), matchedOrderAmount);
-                    }
+                    updateResults(newHashSet(buyPrice, sellOrder.getPrice()), matchedOrderAmount);
                 }
-
-                firstBuyOrderMatch = false;
             }
         }
 
         return TradeResult.of(maxAmount, avgPrice(resPrices));
     }
 
-    private int calcBuyTotalAmount(SortedMap<BigDecimal, Integer> buyOrders, BigDecimal buyPrice, int sellTotalAmount) {
-        int buyTotalAmount = 0;
-        SortedMap<BigDecimal, Integer> submap = buyOrders.tailMap(buyPrice);
-        Iterator<Integer> submapIterator = submap.values().iterator();
-
-        while ((buyTotalAmount < sellTotalAmount) && submapIterator.hasNext()) {
-            Integer buyOrder = submapIterator.next();
-            buyTotalAmount += buyOrder;
-        }
-
-        return buyTotalAmount;
-    }
-
-    private void updateResult(BigDecimal price, Integer amount) {
+    private void updateResults(Set<BigDecimal> prices, Integer amount) {
         if (amount >= maxAmount) {
 
             if (amount > maxAmount) {
                 resPrices = new HashSet<>();
             }
 
-            resPrices.add(price);
+            resPrices.addAll(prices);
             maxAmount = amount;
         }
     }
